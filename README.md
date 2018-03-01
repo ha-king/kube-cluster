@@ -26,3 +26,11 @@ This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops wi
 
 ##### Prometheus
 ![Launch](./img/prometheus.png?raw=true "prometheus")
+
+### Cleanup cluster
+From bastion as root:
+
+1. . ~/.bash_profile
+1. kops delete cluster --name private.cluster.k8s.local --yes
+1. Allow 5-10 minutes for teardown
+1. Delete nested master CF stack
