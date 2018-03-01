@@ -1,7 +1,7 @@
 # Kubernetes via Bastion Host
 
 ## Nested CloudFormation
-This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops will deploy a distributed Kubernetes cluster w/ proxy dashboard and monitoring
+This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops will deploy a distributed Kubernetes gossip-cluster plus proxy dashboard and monitoring
 #### Ohio region only
 ### Installation Guide
 1. <a href="https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=VPC-Kubernetes&templateURL=https://s3.amazonaws.com/infascination-public-oregon/cfn-templates/nested-master.template" target="_blank">![Launch](./img/launch-stack.png?raw=true "Launch")</a>
