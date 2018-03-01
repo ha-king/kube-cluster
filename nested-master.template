@@ -1,0 +1,21 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Master template for deploying nested stack w/ VPC + Bastion for Kops'
+Parameters:
+  KeyName:
+    Description: 'Name of the private key for SSH access'
+    Type: String
+  
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3-us-west-2.amazonaws.com/infascination-public-oregon/cfn-templates/vpc-3azs.template
+  KubeStack:
+    DependsOn: 'VPCStack'
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ParentVPC: !GetAtt VPCStack.Outputs.VPCStackName
+        KeyName: !Ref KeyName
+      TemplateURL: https://s3-us-west-2.amazonaws.com/infascination-public-oregon/cfn-templates/ec2-kube-ubuntu.template

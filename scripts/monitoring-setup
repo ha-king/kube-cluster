@@ -1,0 +1,67 @@
+#!/bin/bash -x
+
+# Generate secret token file for login
+TOKEN=$(kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep "default-token" | cut -d' ' -f 1))
+
+echo -e "$TOKEN" > /home/ubuntu/Desktop/token.txt
+
+sleep 120
+
+# Deploy Kubernetes Dashboard template
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+
+# Start dashboard proxy service
+kubectl proxy &
+
+sleep 120
+
+# Deploy monitoring tools: Heapster / Prometheus
+kubectl apply -f templates/heapster/
+kubectl apply -f templates/prometheus/prometheus-bundle.yaml
+
+sleep 120
+
+# Validate successful deployment for monitoring tools
+kubectl rollout status deployment/prometheus-operator -n monitoring
+
+# Deploy RBAC for Prometheus
+kubectl apply -f templates/prometheus/prometheus.yaml
+kubectl get po -l prometheus=prometheus -n monitoring
+
+# Deploy Grafana 
+kubectl apply -f templates/prometheus/grafana-bundle.yaml
+
+sleep 120
+
+# Validate successful deployment for monitoring tools
+kubectl rollout status deployment/grafana -n monitoring
+
+# Create service launch script
+cat << EOF > /home/ubuntu/Desktop/cluster-monitoring
+#!/bin/bash -x
+#export PROMETHEUS='\$(kubectl get pod -l prometheus=prometheus -n monitoring -o jsonpath={.items[0].metadata.name})'
+#export GRAFANA='\$(kubectl get pod -l app=grafana -o jsonpath={.items[0].metadata.name} -n monitoring)'
+kubectl port-forward \$(kubectl get pod -l prometheus=prometheus -n monitoring -o jsonpath={.items[0].metadata.name}) 9090 -n monitoring &
+kubectl port-forward \$(kubectl get pod -l app=grafana -o jsonpath={.items[0].metadata.name} -n monitoring) 3000 -n monitoring &
+exit 0
+EOF
+
+# Create desktop launch script
+cat << EOF > /home/ubuntu/Desktop/LaunchChrome
+#!/bin/bash -x
+google-chrome-stable http://localhost:3000 &
+google-chrome-stable http://localhost:9090/targets &
+google-chrome-stable http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ &
+exit 0
+EOF
+
+# Make launch file executable
+chmod 777 /home/ubuntu/Desktop/LaunchChrome
+
+# Make monitoring launch file executable
+chmod 777 /home/ubuntu/Desktop/cluster-monitoring
+
+# Trigger monitoring launch file
+/bin/sh /home/ubuntu/Desktop/cluster-monitoring
+
+exit 0
