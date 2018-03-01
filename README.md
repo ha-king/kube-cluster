@@ -1,8 +1,8 @@
 # Kubernetes via Bastion Host
 
 ## Nested CloudFormation
-This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops will deploy a distributed Kubernetes cluster.
-### Ohio region only
+This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops will deploy a distributed Kubernetes cluster w/ proxy dashboard and monitoring
+#### Ohio region only
 ### Installation Guide
 1. <a href="https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=VPC-Kubernetes&templateURL=https://s3.amazonaws.com/infascination-public-oregon/cfn-templates/nested-master.template" target="_blank">![Launch](./img/launch-stack.png?raw=true "Launch")</a>
 1. Click **Next** to proceed with the next step of the wizard.
@@ -14,6 +14,6 @@ This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops wi
 1. Wait until the stack reaches the state **CREATE_COMPLETE**
 1. Copy Bastion Host public IP from the KubeStack outputs tab
 
-#### Wait approximately 10 minutes
+#### Wait approximately 15 minutes
 
 #### Visit public IP of Kubernetes-Bastion instance via RDP
