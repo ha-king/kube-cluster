@@ -15,4 +15,4 @@ echo 'export KOPS_STATE_STORE=s3://"$S3_BUCKET"' >> /root/.bash_profile
 . /root/.bash_profile
 aws s3 mb $KOPS_STATE_STORE
 aws s3api put-bucket-versioning --bucket $S3_BUCKET --versioning-configuration Status=Enabled
-kops create cluster --name private.cluster.k8s.local --master-count 3 --node-count 5 --zones $AWS_AVAILABILITY_ZONES --yes
+kops create cluster --name private.cluster.k8s.local --master-count 3 --node-count 5 --zones $AWS_AVAILABILITY_ZONES --target=cloudformation --yes
