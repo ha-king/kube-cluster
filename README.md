@@ -17,3 +17,12 @@ This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops wi
 #### Wait approximately 15 minutes
 
 #### Visit public IP of Kubernetes-Bastion instance via RDP
+
+##### Kubernetes Dashboard
+![Launch](./img/kube-dash.png?raw=true "kube-dash")
+
+##### Grafana
+![Launch](./img/grafana.png?raw=true "grafana")
+
+##### Prometheus
+![Launch](./img/prometheus.png?raw=true "prometheus")
