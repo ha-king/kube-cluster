@@ -52,6 +52,7 @@ cat << EOF > /home/ubuntu/Desktop/LaunchChrome
 google-chrome-stable http://localhost:3000 &
 google-chrome-stable http://localhost:9090/targets &
 google-chrome-stable http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ &
+google-chrome-stable http://localhost:5601 &
 exit 0
 EOF
 

@@ -18,6 +18,11 @@ Metadata:
       - KeyName
       - IAMUserSSHAccess
       - LogsRetentionInDays
+    - Label:
+        default: 'S3 Parameters'
+      Parameters:
+      - SetupFiles
+      - StateStore
 Parameters:
   ParentVPC:
     Description: 'Stack name of parent VPC stack based on vpc/vpc-*azs.yaml template.'
@@ -60,6 +65,13 @@ Parameters:
     Type: Number
     Default: 14
     AllowedValues: [1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653]
+  SetupFiles:
+    Description: 'S3 Bucket where setup resources are archived'
+    Type: String
+  StateStore:
+    Description: 'Terraform configuration state store files for kubernetes stack'
+    Type: String
+
 Mappings:
   RegionMap:
     'us-east-1':
@@ -142,13 +154,31 @@ Resources:
             - 'logs:DescribeLogStreams'
             Resource:
             - 'arn:aws:logs:*:*:*'
-      - PolicyName: access
+      - PolicyName: s3-access
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
           - Effect: Allow
             Action:
-            - '*'
+            - 's3:*'
+            Resource:
+            - !Sub 'arn:aws:s3:::${SetupFiles}'
+            - !Sub 'arn:aws:s3:::${SetupFiles}/*'
+            - !Sub 'arn:aws:s3:::${StateStore}'
+            - !Sub 'arn:aws:s3:::${StateStore}/*'
+      - PolicyName: kops-access
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - 'ec2:*'
+            - 'iam:*'
+            - 'vpc:*'
+            - 'route53:*'
+            - 's3:*'
+            - 'autoscaling:*'
+            - 'elasticloadbalancing:*'
             Resource:
             - '*'
   IAMPolicySSHAccess:
@@ -306,18 +336,23 @@ Resources:
            apt-get install -y libgconf2-4 libnss3-1d libxss1
            apt-get -f install -y
            pip install awscli
-           aws s3 cp s3://inf-kops-config/kops-setup .
+           aws s3 cp s3://${SetupFiles}/kops-setup .
            touch /root/.bash_profile
            echo 'export export HOME=/root' >> /root/.bash_profile
            echo 'export PATH=$PATH:$HOME:/usr/local/bin/' >> /root/.bash_profile
            . /root/.bash_profile
+           sed -i 's/BUCKET_NAME/${StateStore}/g' kops-setup
+           AWS_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/\(.*\)[a-z]/\1/')
+           sed -i 's/REGION/"$AWS_REGION"/g' kops-setup
            . ./kops-setup
            mkdir templates
-           aws s3 cp s3://infascination-public-oregon/cluster-monitoring/ templates/ --recursive
+           aws s3 cp s3://${SetupFiles}/cluster-monitoring/ templates/ --recursive
            mkdir /home/ubuntu/Desktop
            sleep 300
-           aws s3 cp s3://inf-kops-config/monitoring-setup .
+           aws s3 cp s3://${SetupFiles}/monitoring-setup .
            /bin/sh monitoring-setup
+           aws s3 cp s3://${SetupFiles}/efk-setup .
+           /bin/sh efk-setup
       SubnetId:
         'Fn::ImportValue': !Sub '${ParentVPC}-${SubnetName}'
       Tags:
