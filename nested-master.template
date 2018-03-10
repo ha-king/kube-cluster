@@ -16,7 +16,7 @@ Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3-us-east-2.amazonaws.com/${SetupFiles}/cfn-templates/vpc-3azs.template
+      TemplateURL: !Sub 'https://s3-us-east-2.amazonaws.com/${SetupFiles}/cfn-templates/vpc-3azs.template'
   KubeStack:
     DependsOn: 'VPCStack'
     Type: AWS::CloudFormation::Stack
@@ -26,4 +26,4 @@ Resources:
         KeyName: !Ref KeyName
         SetupFiles: !Ref SetupFiles
         StateStore: !Ref StateStore
-      TemplateURL: https://s3-us-east-2.amazonaws.com/${SetupFiles}/cfn-templates/ec2-kube-bastion.template
+      TemplateURL: !Sub 'https://s3-us-east-2.amazonaws.com/${SetupFiles}/cfn-templates/ec2-kube-bastion.template'
