@@ -5,12 +5,18 @@ Parameters:
   KeyName:
     Description: 'Name of the private key for SSH access'
     Type: String
-  
+  SetupFiles:
+    Description: 'S3 Bucket where setup resources are archived'
+    Type: String
+  StateStore:
+    Description: 'Terraform configuration state store files for kubernetes stack'
+    Type: String
+
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3-us-west-2.amazonaws.com/infascination-public-oregon/cfn-templates/vpc-3azs.template
+      TemplateURL: https://s3-us-east-2.amazonaws.com/etp-kube-setup/cfn-templates/vpc-3azs.template
   KubeStack:
     DependsOn: 'VPCStack'
     Type: AWS::CloudFormation::Stack
@@ -18,4 +24,6 @@ Resources:
       Parameters:
         ParentVPC: !GetAtt VPCStack.Outputs.VPCStackName
         KeyName: !Ref KeyName
-      TemplateURL: https://s3-us-west-2.amazonaws.com/infascination-public-oregon/cfn-templates/ec2-kube-ubuntu.template
+        SetupFiles: !Ref SetupFiles
+        StateStore: !Ref StateStore
+      TemplateURL: https://s3-us-east-2.amazonaws.com/etp-kube-setup/cfn-templates/ec2-kube-bastion.template
