@@ -23,6 +23,12 @@ Metadata:
       Parameters:
       - SetupFiles
       - StateStore
+    - Label:
+        default: 'Kubernetes Cluster'
+      Parameters:
+      - ClusterName
+      - ClusterMasters
+      - ClusterNodes
 Parameters:
   ParentVPC:
     Description: 'Stack name of parent VPC stack based on vpc/vpc-*azs.yaml template.'
@@ -71,6 +77,30 @@ Parameters:
   StateStore:
     Description: 'Terraform configuration state store files for kubernetes stack'
     Type: String
+  ClusterName:
+    Description: 'Name of the cluster, either DNS or Gossip: cluster.k8s.local or xyz.com'
+    Type: String
+  ClusterMasters:
+    Description: 'Select the number of masters for this cluster.'
+    Type: String
+    AllowedValues:
+    - 1
+    - 3
+    - 5
+    - 7
+  ClusterNodes:
+    Description: 'Select the number of nodes for this cluster.'
+    Type: String
+    AllowedValues:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
 
 Mappings:
   RegionMap:
@@ -344,6 +374,9 @@ Resources:
            sed -i 's/BUCKET_NAME/${StateStore}/g' kops-setup
            AWS_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/\(.*\)[a-z]/\1/')
            sed -i 's/REGION/"$AWS_REGION"/g' kops-setup
+           sed -i 's/CLUSTER_NAME/"${ClusterName}"/g' kops-setup
+           sed -i 's/CLUSTER_MASTERS/"${ClusterMasters}"/g' kops-setup
+           sed -i 's/CLUSTER_NODES/"${ClusterNodes}"/g' kops-setup
            . ./kops-setup
            mkdir templates
            aws s3 cp s3://${SetupFiles}/cluster-monitoring/ templates/ --recursive
