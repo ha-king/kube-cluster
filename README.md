@@ -6,7 +6,7 @@ This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops wi
 #### Setup Steps
 1. Create a new bucket
 1. Create a folder "cfn-templates" and upload CF templates from this repo
-1. Create a folder "cluster-monitoring" and upload Heapster + Prometheus YAML files
+1. Create a folder "cluster-monitoring" and upload Heapster + Prometheus directories and YAML files
 
 #### Ohio region only
 
