@@ -8,9 +8,7 @@ This nested template deploys a VPC w/ 3AZs and a bastion host from which Kops wi
 1. Create a folder "cfn-templates" and upload CF templates from this repo
 1. Create a folder "cluster-monitoring" and upload Heapster + Prometheus directories and YAML files
 
-#### Ohio region only
-
-### Installation Guide
+### Installation Guide -- Ohio region ONLY 
 1. <a href="https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=VPC-Kubernetes&templateURL=https://s3-us-east-2.amazonaws.com/inf-kube-setup/cfn-templates/nested-master.template" target="_blank">![Launch](./img/launch-stack.png?raw=true "Launch")</a>
 1. Click **Next** to proceed with the next step of the wizard.
 1. Specify a name and all parameters for the stack.
