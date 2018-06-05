@@ -14,6 +14,7 @@ Parameters:
     - t2.small
     - t2.medium
     - t2.large
+    Default: 't2.large'
   SetupFiles:
     Description: 'S3 Bucket where setup resources are archived'
     Type: String
@@ -23,6 +24,7 @@ Parameters:
   ClusterName:
     Description: 'Name of the cluster, either DNS or Gossip: cluster.k8s.local | xyz.com'
     Type: String
+    Default: 'cluster.k8s.local'
   ClusterMasters:
     Description: 'Select the number of masters for this cluster.'
     Type: String
@@ -31,6 +33,7 @@ Parameters:
     - 3
     - 5
     - 7
+    Default: '3'
   ClusterNodes:
     Description: 'Select the number of nodes for this cluster.'
     Type: String
@@ -44,6 +47,7 @@ Parameters:
     - 7
     - 8
     - 9
+    Default: '3'
 
 Resources:
   VPCStack:
